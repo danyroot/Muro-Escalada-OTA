@@ -20,6 +20,6 @@ python tools/create_release_manifest.py `
   --super-mini-bin ..\DriverLedPixel-Esp-Now\build\DriverLedPixel.bin
 ```
 
-El comando genera en `release/` los cuatro assets que deben cargarse en un
+El comando genera en `release/` los seis assets que deben cargarse en un
 GitHub Release con tag `c6-v1.0.0`. Antes de publicar, comprueba que la
 versión y los hashes correspondan con los binarios que se van a distribuir.

@@ -53,14 +53,14 @@ def make_manifest(version: str, repository: str, integrated_asset: str,
     lines = [
         "format=1",
         f"release={tag}",
-        f"integrated_c6.version={version}",
-        f"integrated_c6.url={github_asset_url(repository, tag, integrated_asset)}",
-        f"integrated_c6.sha256={integrated_hash}",
-        f"integrated_c6.size={integrated_size}",
-        f"super_mini_c6.version={version}",
-        f"super_mini_c6.url={github_asset_url(repository, tag, super_mini_asset)}",
-        f"super_mini_c6.sha256={super_mini_hash}",
-        f"super_mini_c6.size={super_mini_size}",
+        f"esp_hosted.version={version}",
+        f"esp_hosted.url={github_asset_url(repository, tag, integrated_asset)}",
+        f"esp_hosted.sha256={integrated_hash}",
+        f"esp_hosted.size={integrated_size}",
+        f"driver_led_pixel.version={version}",
+        f"driver_led_pixel.url={github_asset_url(repository, tag, super_mini_asset)}",
+        f"driver_led_pixel.sha256={super_mini_hash}",
+        f"driver_led_pixel.size={super_mini_size}",
     ]
     return ("\n".join(lines) + "\n").encode("utf-8")
 
@@ -85,8 +85,8 @@ def main() -> int:
 
     output = args.output_dir
     output.mkdir(parents=True, exist_ok=True)
-    integrated_asset = f"integrated-c6-{args.version}.bin"
-    super_mini_asset = f"super-mini-c6-{args.version}.bin"
+    integrated_asset = f"esp-hosted-{args.version}.bin"
+    super_mini_asset = f"DriverLedPixel-{args.version}.bin"
     manifest_asset = f"manifest-c6-{args.version}.txt"
     signature_asset = f"manifest-c6-{args.version}.sig"
 
@@ -101,9 +101,14 @@ def main() -> int:
     command = [find_openssl(), "dgst", "-sha256", "-sign", str(args.signing_key),
                "-out", str(signature_path), str(manifest_path)]
     subprocess.run(command, check=True)
+    # GitHub resolves /releases/latest/download/<asset> to the asset bearing
+    # this stable name in the newest release. Devices fetch these two files.
+    shutil.copyfile(manifest_path, output / "manifest-c6-latest.txt")
+    shutil.copyfile(signature_path, output / "manifest-c6-latest.sig")
 
     print("Assets listos para el Release:")
-    for asset in (integrated_asset, super_mini_asset, manifest_asset, signature_asset):
+    for asset in (integrated_asset, super_mini_asset, manifest_asset, signature_asset,
+                  "manifest-c6-latest.txt", "manifest-c6-latest.sig"):
         print(output / asset)
     return 0
 

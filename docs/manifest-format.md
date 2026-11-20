@@ -7,22 +7,28 @@ termina con un `LF`; esos bytes exactos son los que se firman.
 ```text
 format=1
 release=c6-v1.0.0
-integrated_c6.version=1.0.0
-integrated_c6.url=https://github.com/danyroot/Muro-Escalada-OTA/releases/download/c6-v1.0.0/integrated-c6-1.0.0.bin
-integrated_c6.sha256=<64 hex SHA-256>
-integrated_c6.size=<bytes>
-super_mini_c6.version=1.0.0
-super_mini_c6.url=https://github.com/danyroot/Muro-Escalada-OTA/releases/download/c6-v1.0.0/super-mini-c6-1.0.0.bin
-super_mini_c6.sha256=<64 hex SHA-256>
-super_mini_c6.size=<bytes>
+esp_hosted.version=1.0.0
+esp_hosted.url=https://github.com/danyroot/Muro-Escalada-OTA/releases/download/c6-v1.0.0/esp-hosted-1.0.0.bin
+esp_hosted.sha256=<64 hex SHA-256>
+esp_hosted.size=<bytes>
+driver_led_pixel.version=1.0.0
+driver_led_pixel.url=https://github.com/danyroot/Muro-Escalada-OTA/releases/download/c6-v1.0.0/DriverLedPixel-1.0.0.bin
+driver_led_pixel.sha256=<64 hex SHA-256>
+driver_led_pixel.size=<bytes>
 ```
 
 Los assets del Release son:
 
-- `integrated-c6-<version>.bin`
-- `super-mini-c6-<version>.bin`
+- `esp-hosted-<version>.bin`
+- `DriverLedPixel-<version>.bin`
 - `manifest-c6-<version>.txt`
 - `manifest-c6-<version>.sig`
+- `manifest-c6-latest.txt`
+- `manifest-c6-latest.sig`
+
+Los dos assets `latest` contienen exactamente los mismos bytes que el
+manifest y la firma versionados del Release. Permiten que los dispositivos
+consulten el Release más reciente mediante la URL estable de GitHub.
 
 El firmware rechaza un manifiesto si falla la firma, el destino, el tamaño,
 la URL HTTPS o el SHA-256. La firma autentica el manifiesto; el SHA-256
