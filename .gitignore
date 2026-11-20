@@ -1,0 +1,8 @@
+# Never place signing keys in this repository.
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Locally assembled GitHub Release assets.
+release/
