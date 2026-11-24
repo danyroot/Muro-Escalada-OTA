@@ -15,11 +15,13 @@ Compila ambos C6 y ejecuta localmente:
 
 ```powershell
 python tools/create_release_manifest.py `
-  --version 1.0.0 `
+  --release-version 2.11.1 `
+  --esp-hosted-version 2.11.1 `
+  --driver-led-pixel-version 1.0.0 `
   --integrated-bin ..\UpdateEsp32c6_2.11.0_Esp-Now\build\network_adapter.bin `
   --super-mini-bin ..\DriverLedPixel-Esp-Now\build\DriverLedPixel.bin
 ```
 
 El comando genera en `release/` los seis assets que deben cargarse en un
-GitHub Release con tag `c6-v1.0.0`. Antes de publicar, comprueba que la
+GitHub Release con tag `c6-v2.11.1`. Antes de publicar, comprueba que la
 versión y los hashes correspondan con los binarios que se van a distribuir.

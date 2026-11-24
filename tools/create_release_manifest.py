@@ -44,20 +44,21 @@ def find_openssl() -> str:
     raise RuntimeError("OpenSSL no encontrado. Define OPENSSL con la ruta de openssl.exe.")
 
 
-def make_manifest(version: str, repository: str, integrated_asset: str,
+def make_manifest(release_version: str, esp_hosted_version: str, driver_led_pixel_version: str,
+                  repository: str, integrated_asset: str,
                   integrated_bin: Path, super_mini_asset: str,
                   super_mini_bin: Path) -> bytes:
-    tag = f"c6-v{version}"
+    tag = f"c6-v{release_version}"
     integrated_hash, integrated_size = sha256_and_size(integrated_bin)
     super_mini_hash, super_mini_size = sha256_and_size(super_mini_bin)
     lines = [
         "format=1",
         f"release={tag}",
-        f"esp_hosted.version={version}",
+        f"esp_hosted.version={esp_hosted_version}",
         f"esp_hosted.url={github_asset_url(repository, tag, integrated_asset)}",
         f"esp_hosted.sha256={integrated_hash}",
         f"esp_hosted.size={integrated_size}",
-        f"driver_led_pixel.version={version}",
+        f"driver_led_pixel.version={driver_led_pixel_version}",
         f"driver_led_pixel.url={github_asset_url(repository, tag, super_mini_asset)}",
         f"driver_led_pixel.sha256={super_mini_hash}",
         f"driver_led_pixel.size={super_mini_size}",
@@ -67,7 +68,9 @@ def make_manifest(version: str, repository: str, integrated_asset: str,
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", required=True, help="Version semantica, por ejemplo 1.0.0")
+    parser.add_argument("--release-version", required=True, help="Version del Release, por ejemplo 2.11.1")
+    parser.add_argument("--esp-hosted-version", required=True)
+    parser.add_argument("--driver-led-pixel-version", required=True)
     parser.add_argument("--integrated-bin", required=True, type=Path)
     parser.add_argument("--super-mini-bin", required=True, type=Path)
     parser.add_argument("--repository", default=DEFAULT_REPOSITORY)
@@ -80,17 +83,19 @@ def main() -> int:
             parser.error(f"No existe el binario: {image}")
     if not args.signing_key.is_file():
         parser.error(f"No existe la clave privada: {args.signing_key}")
-    if not args.version or any(ch not in "0123456789.-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for ch in args.version):
-        parser.error("La version contiene caracteres no permitidos.")
+    for version in (args.release_version, args.esp_hosted_version, args.driver_led_pixel_version):
+        if not version or any(ch not in "0123456789.-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for ch in version):
+            parser.error("Una version contiene caracteres no permitidos.")
 
     output = args.output_dir
     output.mkdir(parents=True, exist_ok=True)
-    integrated_asset = f"esp-hosted-{args.version}.bin"
-    super_mini_asset = f"DriverLedPixel-{args.version}.bin"
-    manifest_asset = f"manifest-c6-{args.version}.txt"
-    signature_asset = f"manifest-c6-{args.version}.sig"
+    integrated_asset = f"esp-hosted-{args.esp_hosted_version}.bin"
+    super_mini_asset = f"DriverLedPixel-{args.driver_led_pixel_version}.bin"
+    manifest_asset = f"manifest-c6-{args.release_version}.txt"
+    signature_asset = f"manifest-c6-{args.release_version}.sig"
 
-    manifest = make_manifest(args.version, args.repository, integrated_asset,
+    manifest = make_manifest(args.release_version, args.esp_hosted_version, args.driver_led_pixel_version,
+                             args.repository, integrated_asset,
                              args.integrated_bin, super_mini_asset, args.super_mini_bin)
     manifest_path = output / manifest_asset
     signature_path = output / signature_asset
